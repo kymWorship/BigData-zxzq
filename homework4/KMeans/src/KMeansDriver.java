@@ -1,5 +1,8 @@
 
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.net.URI;
 import java.util.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
@@ -34,6 +37,16 @@ public class KMeansDriver{
             System.exit(2);
         }
 
+        // Test Group
+        Configuration testConf = new Configuration();
+        FileSystem hdfs = FileSystem.get(testConf);
+        Path inputDir = new Path(args[0]);
+        FileStatus[] inputFiles = hdfs.listStatus(inputDir);
+        for (FileStatus File :inputFiles) {
+            System.out.println(File.toString());
+        }
+
+
         String tempFolder = args[2] + "/temp";
         String currentInputCenter = args[1];
         String currentOutputCenter= tempFolder + "/center_" + Integer.toString(repeated);
@@ -58,6 +71,8 @@ public class KMeansDriver{
             //    fs.delete(out, true);
             //}
             FileOutputFormat.setOutputPath(job, new Path(currentOutputCenter));//设置输出路径
+
+            job.addCacheFile(new Path(currentInputCenter).toUri());
 
             job.setMapperClass(KMeansMapper.class);//设置Map类
             job.setReducerClass(KMeansReducer.class);//设置Reduce类
@@ -108,10 +123,31 @@ public class KMeansDriver{
 }
 
 class KMeansMapper extends Mapper<Object, Text, IntWritable, Text> {
+    private ArrayList<ArrayList<Float>> centers = new ArrayList<ArrayList<Float>>();
+
+    @Override
+    protected void setup(Context context) throws IOException, InterruptedException{
+        URI centerFileUri = context.getCacheFiles()[0];
+        String centerFileName = new Path(centerFileUri.getPath()).getName().toString();
+        BufferedReader centersReader = new BufferedReader(new FileReader(centerFileName)); // 创建文件读取器
+
+        String line;    // 文件中的一行
+        while((line = centersReader.readLine()) != null) {
+            String id = line.split("\\s+")[0];
+            String[] features = line.split("\\s+")[1].split(",");   // 获取该点各维数值
+            ArrayList<Float> center = new ArrayList<Float>();   // 用于存储该点
+            for(String feature : features) center.add(Float.parseFloat(feature));   // 类型转化
+            assert(center.size() == 10);
+            centers.add(center);    // 存到点集中
+
+        }
+        centersReader.close();
+    }
+
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException{
         String line = value.toString();
         String[] fields = line.split(" ");
-        List<ArrayList<Float>> centers = Assistance.getCenters(context.getConfiguration().get("centerpath"));
+        //List<ArrayList<Float>> centers = Assistance.getCenters(context.getConfiguration().get("centerpath"));
         int k = Integer.parseInt(context.getConfiguration().get("kpath"));
         float minDist = Float.MAX_VALUE;
         int centerIndex = k;
@@ -119,7 +155,7 @@ class KMeansMapper extends Mapper<Object, Text, IntWritable, Text> {
         for (int i = 0; i < k; ++i){
             float currentDist = 0;
             for (int j = 0; j < fields.length-1; ++j){
-                float tmp = Math.abs(centers.get(i).get(j) - Float.parseFloat(fields[j+1]));
+                float tmp = Math.abs(this.centers.get(i).get(j) - Float.parseFloat(fields[j+1]));
                 currentDist += Math.pow(tmp, 2);
             }
             if (minDist > currentDist){
