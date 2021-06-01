@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="KMeans:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/KMeans_jar</output-path>
+    <root id="archive" name="KMeans.jar">
+      <element id="module-output" name="KMeans" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../HadoopLib/commons-cli-1.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../HadoopLib/hadoop-common-2.2.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../HadoopLib/hadoop-mapreduce-client-core-0.23.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
