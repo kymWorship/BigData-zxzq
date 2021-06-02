@@ -38,13 +38,13 @@ public class KMeansDriver{
         }
 
         // Test Group
-        Configuration testConf = new Configuration();
-        FileSystem hdfs = FileSystem.get(testConf);
-        Path inputDir = new Path(args[0]);
-        FileStatus[] inputFiles = hdfs.listStatus(inputDir);
-        for (FileStatus File :inputFiles) {
-            System.out.println(File.toString());
-        }
+        //Configuration testConf = new Configuration();
+        //FileSystem hdfs = FileSystem.get(testConf);
+        //Path inputDir = new Path(args[0]);
+        //FileStatus[] inputFiles = hdfs.listStatus(inputDir);
+        //for (FileStatus File :inputFiles) {
+        //    System.out.println(File.toString());
+        //}
 
 
         String tempFolder = args[2] + "/temp";
@@ -60,13 +60,14 @@ public class KMeansDriver{
                 currentOutputCenter= tempFolder + "/center_" + Integer.toString(repeated);
             }
             Configuration conf = new Configuration();
-            conf.set("centerpath", currentInputCenter);  //Last聚类中心文件
+            //conf.set("centerpath", currentInputCenter);  //Last聚类中心文件
             conf.set("kpath", args[3]);  //聚类数
+            conf.set("repeated", Integer.toString(repeated));
             Job job = new Job(conf, "KMeansCluster");//新建MapReduce作业
             job.setJarByClass(KMeansDriver.class);//设置作业启动类
 
             FileInputFormat.addInputPath(job, in);//设置输入路径
-            FileSystem fs = FileSystem.get(conf);
+            //FileSystem fs = FileSystem.get(conf);
             //if (fs.exists(out)){//如果输出路径存在，则先删除之
             //    fs.delete(out, true);
             //}
@@ -127,8 +128,13 @@ class KMeansMapper extends Mapper<Object, Text, IntWritable, Text> {
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException{
-        URI centerFileUri = context.getCacheFiles()[0];
+        URI[] uriList = context.getCacheFiles();
+        assert(uriList.length==1);
+        URI centerFileUri = uriList[0];
         String centerFileName = new Path(centerFileUri.getPath()).getName().toString();
+        if ( Integer.parseInt(context.getConfiguration().get("repeated")) != 0 ) {
+            centerFileName += "/part-r-00000";
+        }
         BufferedReader centersReader = new BufferedReader(new FileReader(centerFileName)); // 创建文件读取器
 
         String line;    // 文件中的一行
