@@ -143,7 +143,7 @@ class RankReducer extends Reducer<OrderBean, NullWritable, Text, NullWritable> {
 			task = key.getType();
 			m_score = key.getNumb();
 		}
-		if(cnt < 5) {// Comment: what if max player < 5(impossible here)
+		if(cnt < 5 && task.equals(key.getType())) {// Comment: what if max player < 5(impossible here)
 			cnt += 1;
 			int tmp_score = key.getNumb();
 			if(tmp_score<m_score){

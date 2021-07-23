@@ -78,7 +78,7 @@ class CountMapper extends Mapper<Object, Text, Order, Text> {
 			if(props[9].equals("miss")){
 				;
 			}
-			if(shottype.substring(0,1).equals("2")){
+			else if(shottype.substring(0,1).equals("2")){
 				home_score += 2*pri;
 				away_score += 2*(1-pri);
 			} else {
