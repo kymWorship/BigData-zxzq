@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Prediction:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Prediction_jar</output-path>
+    <root id="archive" name="Prediction.jar">
+      <element id="module-output" name="Prediction" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../../../../../Java_workspace/HadoopLib/commons-cli-1.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../../../../../Java_workspace/HadoopLib/hadoop-common-2.2.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../../../../../Java_workspace/HadoopLib/hadoop-mapreduce-client-core-0.23.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

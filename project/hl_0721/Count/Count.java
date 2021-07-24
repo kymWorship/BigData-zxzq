@@ -50,14 +50,14 @@ public class Count{
 
 }
 
-class CountMapper extends Mapper<Object, Text, Order, Text> {
+class CountMapper extends Mapper<LongWritable, Text, Order, Text> {
 	protected int cnt = 0;
 	@Override
-	protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		/* We get a line of record and return (date, home, away) as key and temp score of (home_score, away_score)
 		 * ! Please note that we return two scores when one score event happens in order to align the output data !
 		 */
-		if(cnt==0){cnt=1;return;}
+		if(key.equals(new LongWritable(0))){return;} // skip title
 		FileSplit fs = (FileSplit) context.getInputSplit();
 		String[] props = value.toString().split("\\,",26);
 		System.out.println(props.length);

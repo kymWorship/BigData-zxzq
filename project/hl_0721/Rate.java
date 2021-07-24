@@ -88,7 +88,7 @@ class RankMapper extends Mapper<Object, Text, OrderBean, NullWritable> {
 }
 
 class RateMapper extends Mapper<Object, Text, Order, IntWritable> {
-	protected int cnt = 0;
+	protected int cnt = 0;// use key instead!
 	@Override
 	protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 		if(cnt==0){cnt=1;return;}
